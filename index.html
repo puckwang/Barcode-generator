@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Barcode Generator</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <script src="js/vue.min.js"></script>
+    <script src="js/JsBarcode.all.min.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <div class="box-body col-lg-offset-7">
+        <div class="dataTables_wrapper form-inline dt-bootstrap">
+            起始數字: <input type="number" v-model="startNum"><br>
+            結束數字: <input id="endNum" type="number" v-model="endNum"><br>
+            位數: <input type="number" v-model="numberBits"><br>
+            標題: <input type="text" size="50" v-model="title"><br>
+            <input class="btn btn-default" type="button" v-on:click="preview()" value="預覽"/>
+            <input class="btn btn-default" type="button" v-on:click="print()" value="列印"/><br>
+            數量: {{ count }}
+        </div>
+        <div id="print_parts"
+             style="height: 21cm; width: 29.5cm; position: absolute;left: 0;top: 0;bottom: 0; padding-top: 0px;">
+            <div v-for="i in count" style="height: 2.55cm; width: 3.68cm; float: left; text-align: center; padding:0px; margin:0px; border-top: 1px solid #ccc;">
+                <div style="margin:9px 0px 0px 0px; padding:0px; font-size: 12px; -webkit-transform : scale(0.75);">{{ title }}</div>
+                <img style="border: solid 1px #000;" v-bind:id="'barcode'+i"/>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            startNum: 0,
+            endNum: 64,
+            numberBits: 8,
+            count: 64,
+            title: "看啥租啥-旗山(07)6616666",
+        },
+        methods: {
+            print: function (printlist) {
+                var value = $('#print_parts')[0].outerHTML;
+                var printPage = window.open("", "Printing...", "");
+                printPage.document.open();
+                printPage.document.write("<HTML><head></head><BODY onload='window.print();window.close()'>");
+                printPage.document.write(value);
+                printPage.document.close("</BODY></HTML>");
+            },
+            preview: function () {
+                for (var i = 1; i <= this.count; i++) {
+                    JsBarcode('#barcode' + i, this.getBarcode(this.startNum + i), {
+                        width: 1,
+                        height: 25,
+                        fontSize: 8,
+                    });
+                }
+            },
+            getBarcode: function (num) {
+                num = num.toString();
+                for (var i = num.length; i <= this.numberBits; i++) {
+                    num = "0" + num;
+                }
+                return num;
+            },
+        },
+        watch: {
+            startNum: function () {
+                this.count = this.endNum - this.startNum;
+            },
+            endNum: function () {
+                this.count = this.endNum - this.startNum;
+            }
+        }
+    })
+</script>
+</html>
