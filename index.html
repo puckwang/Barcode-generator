@@ -38,7 +38,7 @@
         el: '#app',
         data: {
             startNum: 0,
-            endNum: 64,
+            endNum: 63,
             numberBits: 8,
             count: 64,
             title: "看啥租啥-旗山(07)6616666",
@@ -54,7 +54,7 @@
             },
             preview: function () {
                 for (var i = 1; i <= this.count; i++) {
-                    JsBarcode('#barcode' + i, this.getBarcode(this.startNum + i), {
+                    JsBarcode('#barcode' + i, this.getBarcode(parseInt(this.startNum) + i - 1), {
                         width: 1,
                         height: 25,
                         fontSize: 8,
@@ -63,7 +63,7 @@
             },
             getBarcode: function (num) {
                 num = num.toString();
-                for (var i = num.length; i <= this.numberBits; i++) {
+                for (var i = num.length; i < this.numberBits; i++) {
                     num = "0" + num;
                 }
                 return num;
@@ -71,10 +71,10 @@
         },
         watch: {
             startNum: function () {
-                this.count = this.endNum - this.startNum;
+                this.count = this.endNum - this.startNum + 1;
             },
             endNum: function () {
-                this.count = this.endNum - this.startNum;
+                this.count = this.endNum - this.startNum + 1;
             }
         }
     })
